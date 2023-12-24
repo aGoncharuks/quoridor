@@ -1,5 +1,6 @@
 :host {
   --cell-size: 80px;
+  --gap-size: 10px;
   height: 100vh;
   display: flex;
   justify-content: center;
@@ -7,10 +8,16 @@
 }
 
 .game-board {
-  display: grid;
-  grid-template-columns: repeat(9, var(--cell-size));
-  grid-template-rows: repeat(9, var(--cell-size));
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   position: relative;
+  border: 10px solid #5C2B29;
+
+  .board-row {
+    display: flex;
+    gap: 10px;
+  }
 
   .board-cell {
     background-color: #f0e9e1;
@@ -22,20 +29,23 @@
   .gap {
     background-color: #bbbbbb;
     position: absolute;
-    z-index: 1;
 
-    &:hover {
+    &.wall {
+      background-color: #5C2B29;
+    }
+
+    &:hover:not(.wall) {
       background-color: #e2d8cf;
     }
   }
 
-  .vertical-gap {
+  .gap-y {
     width: 10px;
     right: -10px;
     height: var(--cell-size);
   }
 
-  .horizontal-gap {
+  .gap-x {
     height: 10px;
     bottom: -10px;
     width: var(--cell-size);

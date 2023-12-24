@@ -1,10 +1,22 @@
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals';
 
 type Player = 'Player1' | 'Player2';
+type Axis = 'x' | 'y';
 
 interface BoardPosition {
   x: number;
   y: number;
+}
+
+interface WallPosition extends BoardPosition  {
+  axis: Axis;
+}
+
+interface BoardCell {
+  walls: {
+    x: boolean;
+    y: boolean;
+  }
 }
 
 interface PlayerPositions {
@@ -14,14 +26,20 @@ interface PlayerPositions {
 
 interface GameState {
   players: Player[];
-  board: number[][];
+  board: BoardCell[][];
   playerPositions: PlayerPositions;
-  walls: BoardPosition[];
   currentPlayer: Player;
 }
 
-const initializeBoard = (): number[][] => {
-  return Array.from({ length: 9 }, () => Array(9).fill(0));
+const initializeBoard = (): BoardCell[][] => {
+  const board: BoardCell[][] = [];
+  for (let i = 0; i < 9; i++) {
+    board[i] = [];
+    for (let j = 0; j < 9; j++) {
+      board[i][j] = { walls: { x: false, y: false } };
+    }
+  }
+  return board;
 }
 
 export const GameStore = signalStore(
@@ -29,10 +47,9 @@ export const GameStore = signalStore(
     players: ['Player1', 'Player2'],
     board: initializeBoard(),
     playerPositions: { Player1: { x: 4, y: 0 }, Player2: { x: 4, y: 8 } },
-    walls: [],
     currentPlayer: 'Player1',
   }),
-  withMethods(({ playerPositions, walls, currentPlayer, ...store }) => ({
+  withMethods(({ playerPositions, board, currentPlayer, ...store }) => ({
     movePlayer(player: string, position: BoardPosition) {
       const updatedPositions = {
         ...playerPositions(),
@@ -40,9 +57,10 @@ export const GameStore = signalStore(
       };
       patchState(store, { playerPositions: updatedPositions, currentPlayer: currentPlayer() === 'Player1' ? 'Player2' : 'Player1' });
     },
-    placeWall(position: BoardPosition) {
-      const updatedWalls = [...walls(), position];
-      patchState(store, { walls: updatedWalls });
+    placeWall(cell: BoardCell, axis: Axis) {
+      console.log(cell, axis);
+      cell.walls = { ...cell.walls, [axis]: true }
+      patchState(store, { board: [...board()] });
     },
     getPlayerPosition(player: Player) {
       return playerPositions()[player];

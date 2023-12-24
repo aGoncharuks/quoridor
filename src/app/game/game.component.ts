@@ -1,10 +1,13 @@
+import { JsonPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { GameStore } from './game.store';
 
 @Component({
   selector: 'app-game',
   standalone: true,
-  imports: [],
+  imports: [
+    JsonPipe
+  ],
   templateUrl: './game.component.html',
   styleUrl: './game.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
