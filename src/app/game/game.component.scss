@@ -1,0 +1,56 @@
+:host {
+  --cell-size: 80px;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.game-board {
+  display: grid;
+  grid-template-columns: repeat(9, var(--cell-size));
+  grid-template-rows: repeat(9, var(--cell-size));
+  position: relative;
+
+  .board-cell {
+    background-color: #f0e9e1;
+    width: var(--cell-size);
+    height: var(--cell-size);
+    position: relative;
+  }
+
+  .gap {
+    background-color: #bbbbbb;
+    position: absolute;
+    z-index: 1;
+
+    &:hover {
+      background-color: #e2d8cf;
+    }
+  }
+
+  .vertical-gap {
+    width: 10px;
+    right: -10px;
+    height: var(--cell-size);
+  }
+
+  .horizontal-gap {
+    height: 10px;
+    bottom: -10px;
+    width: var(--cell-size);
+  }
+
+  .pawn {
+    position: absolute;
+    width: var(--cell-size);
+    height: var(--cell-size);
+
+    &.Player1 {
+      background-color: #b5651d;
+    }
+    &.Player2 {
+      background-color: #5b3926;
+    }
+  }
+}

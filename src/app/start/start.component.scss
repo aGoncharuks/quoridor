@@ -1,0 +1,27 @@
+:host {
+  display: block;
+  height: 100vh;
+}
+
+.centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+/* start.component.css - continued */
+button {
+  padding: 10px 20px;
+  background-color: #8c6653; /* Darker wooden tone for the button */
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #b38b70; /* Lighter shade on hover */
+}

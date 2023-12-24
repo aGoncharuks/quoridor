@@ -1,5 +1,4 @@
 import { ApplicationConfig } from '@angular/core';
-import { provideClientHydration } from '@angular/platform-browser';
 import { provideRouter, Routes } from '@angular/router';
 
 const routes: Routes = [
@@ -16,5 +15,5 @@ const routes: Routes = [
 ];
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideClientHydration(), provideRouter(routes)]
+  providers: [provideRouter(routes)]
 };

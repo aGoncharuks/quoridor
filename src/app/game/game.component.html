@@ -1,1 +1,24 @@
-<p>game works!</p>
+<div class="game-board">
+  @for (row of store.board(); track rowIndex; let rowIndex = $index) {
+    <div class="board-column">
+      @for (cell of row; track cellIndex; let cellIndex = $index) {
+        <div class="board-cell"
+             (click)="store.movePlayer(store.currentPlayer(), {x: cellIndex, y: rowIndex})">
+	        @if (cellIndex < row.length - 1) {
+	          <div class="gap horizontal-gap"></div>
+	        }
+		      @if (rowIndex < store.board().length - 1) {
+			      <div class="gap vertical-gap"></div>
+		      }
+        </div>
+      }
+    </div>
+  }
+
+  @for (player of store.players(); track $index) {
+    <div class="pawn" [class]="player"
+         [style.top]="store.getPlayerPosition(player).y * cellSize"
+         [style.left]="store.getPlayerPosition(player).x * cellSize">
+    </div>
+  }
+</div>
