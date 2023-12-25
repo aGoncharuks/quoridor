@@ -24,31 +24,43 @@
     width: var(--cell-size);
     height: var(--cell-size);
     position: relative;
+
+    &:hover {
+      cursor: pointer;
+    }
   }
 
   .gap {
-    background-color: #bbbbbb;
+    background-color: #e2d8cf;
     position: absolute;
+
+    &.gap-y {
+      width: 10px;
+      right: -10px;
+      height: var(--cell-size);
+
+      &:hover {
+        cursor: col-resize;
+      }
+    }
+
+    &.gap-x {
+      height: 10px;
+      bottom: -10px;
+      width: var(--cell-size);
+
+      &:hover {
+        cursor: row-resize;
+      }
+    }
+
 
     &.wall {
       background-color: #5C2B29;
+      &:hover {
+        cursor: default;
+      }
     }
-
-    &:hover:not(.wall) {
-      background-color: #e2d8cf;
-    }
-  }
-
-  .gap-y {
-    width: 10px;
-    right: -10px;
-    height: var(--cell-size);
-  }
-
-  .gap-x {
-    height: 10px;
-    bottom: -10px;
-    width: var(--cell-size);
   }
 
   .pawn {
