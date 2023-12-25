@@ -8,10 +8,6 @@ interface BoardPosition {
   y: number;
 }
 
-interface WallPosition extends BoardPosition  {
-  axis: Axis;
-}
-
 interface BoardCell {
   walls: {
     x: boolean;
@@ -42,12 +38,20 @@ const initializeBoard = (): BoardCell[][] => {
   return board;
 }
 
+const initStartingPlayer = (): Player => {
+  return Math.random() > 0.5 ? 'Player1' : 'Player2';
+}
+
+const initStartingPlayerPositions = (): PlayerPositions => {
+  return { Player1: { x: 4, y: 0 }, Player2: { x: 4, y: 8 } };
+}
+
 export const GameStore = signalStore(
   withState<GameState>({
     players: ['Player1', 'Player2'],
     board: initializeBoard(),
-    playerPositions: { Player1: { x: 4, y: 0 }, Player2: { x: 4, y: 8 } },
-    currentPlayer: 'Player1',
+    playerPositions: initStartingPlayerPositions(),
+    currentPlayer: initStartingPlayer(),
   }),
   withMethods(({ playerPositions, board, currentPlayer, ...store }) => ({
     movePlayer(player: string, position: BoardPosition) {

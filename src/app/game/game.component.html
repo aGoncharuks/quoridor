@@ -20,7 +20,9 @@
   }
 
   @for (player of store.players(); track $index) {
-    <div class="pawn" [class]="player"
+    <div class="player"
+         [class]="player"
+         [class.active]="store.currentPlayer() === player"
          [style.top]="store.getPlayerPosition(player).y * (cellSize + 10) + 'px'"
          [style.left]="store.getPlayerPosition(player).x * (cellSize + 10) + 'px'">
     </div>
