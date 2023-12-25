@@ -1,4 +1,6 @@
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import { bufferCount, pipe, tap } from 'rxjs';
 
 type Player = 'Player1' | 'Player2';
 type Axis = 'x' | 'y';
@@ -45,7 +47,6 @@ const initStartingPlayer = (): Player => {
 const initStartingPlayerPositions = (): PlayerPositions => {
   return { Player1: { x: 4, y: 0 }, Player2: { x: 4, y: 8 } };
 }
-
 export const GameStore = signalStore(
   withState<GameState>({
     players: ['Player1', 'Player2'],
@@ -53,21 +54,33 @@ export const GameStore = signalStore(
     playerPositions: initStartingPlayerPositions(),
     currentPlayer: initStartingPlayer(),
   }),
-  withMethods(({ playerPositions, board, currentPlayer, ...store }) => ({
+  withMethods(({ currentPlayer, ...store }) => ({
+    changePlayer() {
+      patchState(store, { currentPlayer: currentPlayer() === 'Player1' ? 'Player2' : 'Player1' });
+    }
+  })),
+  withMethods(({ changePlayer }) => ({
+    trackPlacedWalls: rxMethod(pipe(
+      bufferCount(2),
+      tap(() => changePlayer())
+    )),
+  })),
+  withMethods(({ playerPositions, board, currentPlayer, trackPlacedWalls, changePlayer, ...store }) => ({
+    placeWall(cell: BoardCell, axis: Axis) {
+      cell.walls = { ...cell.walls, [axis]: true }
+      patchState(store, { board: [...board()] });
+      trackPlacedWalls(true);
+    },
     movePlayer(player: string, position: BoardPosition) {
       const updatedPositions = {
         ...playerPositions(),
         [player]: position
       };
-      patchState(store, { playerPositions: updatedPositions, currentPlayer: currentPlayer() === 'Player1' ? 'Player2' : 'Player1' });
-    },
-    placeWall(cell: BoardCell, axis: Axis) {
-      console.log(cell, axis);
-      cell.walls = { ...cell.walls, [axis]: true }
-      patchState(store, { board: [...board()] });
+      patchState(store, { playerPositions: updatedPositions });
+      changePlayer();
     },
     getPlayerPosition(player: Player) {
       return playerPositions()[player];
     }
-  }
-)));
+  })
+));
