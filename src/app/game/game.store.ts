@@ -5,7 +5,6 @@ import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { bufferCount, map, pairwise, pipe, tap } from 'rxjs';
 
 type Player = 'Player1' | 'Player2';
-type Axis = 'x' | 'y';
 
 interface BoardPosition {
   x: number;
@@ -113,7 +112,6 @@ export const GameStore = signalStore(
       })).pipe(
         pairwise(),
         map(([previousState]) => previousState),
-        tap((state) => console.log('state', state)),
         tap((state) => patchState(store, { previousState: state })),
         takeUntilDestroyed(),
       ).subscribe();

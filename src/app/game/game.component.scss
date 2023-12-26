@@ -80,8 +80,9 @@
 
   .player {
     position: absolute;
-    width: var(--cell-size);
-    height: var(--cell-size);
+    width: calc(var(--cell-size) - 10px);
+    height: calc(var(--cell-size) - 10px);
+    border-radius: 8px;
 
     &.active {
       &::after {

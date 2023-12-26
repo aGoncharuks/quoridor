@@ -29,8 +29,8 @@
     <div class="player"
          [class]="player"
          [class.active]="store.currentPlayer() === player"
-         [style.top]="store.getPlayerPosition(player).y * (cellSize + 10) + 'px'"
-         [style.left]="store.getPlayerPosition(player).x * (cellSize + 10) + 'px'">
+         [style.top]="store.getPlayerPosition(player).y * (cellSize + 10) + 5 + 'px'"
+         [style.left]="store.getPlayerPosition(player).x * (cellSize + 10) + 5 + 'px'">
     </div>
   }
 </div>
