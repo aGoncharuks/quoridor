@@ -1,6 +1,8 @@
-import { patchState, signalStore, withMethods, withState } from '@ngrx/signals';
+import { computed } from '@angular/core';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { patchState, signalStore, withHooks, withMethods, withState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { bufferCount, pipe, tap } from 'rxjs';
+import { bufferCount, map, pairwise, pipe, tap } from 'rxjs';
 
 type Player = 'Player1' | 'Player2';
 type Axis = 'x' | 'y';
@@ -27,6 +29,7 @@ interface GameState {
   board: BoardCell[][];
   playerPositions: PlayerPositions;
   currentPlayer: Player;
+  previousState: Omit<GameState, 'previousState'> | null;
 }
 
 const initializeBoard = (): BoardCell[][] => {
@@ -47,16 +50,21 @@ const initStartingPlayer = (): Player => {
 const initStartingPlayerPositions = (): PlayerPositions => {
   return { Player1: { x: 4, y: 0 }, Player2: { x: 4, y: 8 } };
 }
+
 export const GameStore = signalStore(
   withState<GameState>({
     players: ['Player1', 'Player2'],
     board: initializeBoard(),
     playerPositions: initStartingPlayerPositions(),
     currentPlayer: initStartingPlayer(),
+    previousState: null,
   }),
-  withMethods(({ currentPlayer, ...store }) => ({
+  withMethods(({ currentPlayer, previousState, ...store }) => ({
     changePlayer() {
       patchState(store, { currentPlayer: currentPlayer() === 'Player1' ? 'Player2' : 'Player1' });
+    },
+    undo() {
+      patchState(store, { ...previousState() });
     }
   })),
   withMethods(({ changePlayer }) => ({
@@ -66,9 +74,19 @@ export const GameStore = signalStore(
     )),
   })),
   withMethods(({ playerPositions, board, currentPlayer, trackPlacedWalls, changePlayer, ...store }) => ({
-    placeWall(cell: BoardCell, axis: Axis) {
-      cell.walls = { ...cell.walls, [axis]: true }
-      patchState(store, { board: [...board()] });
+    placeWall({ x, y, axis }) {
+      const cell = board()[y][x];
+      const newCell = {
+        ...cell,
+        walls: {
+          ...cell.walls,
+          [axis]: true
+        }
+      }
+      const newRow = board()[y].map((cell, index) => index === x ? newCell : cell);
+      const newBoard = board().map((row, index) => index === y ? newRow : row);
+
+      patchState(store, { board: newBoard });
       trackPlacedWalls(true);
     },
     movePlayer(player: string, position: BoardPosition) {
@@ -82,5 +100,23 @@ export const GameStore = signalStore(
     getPlayerPosition(player: Player) {
       return playerPositions()[player];
     }
-  })
-));
+  })),
+  withHooks({
+    onInit({ players, board, playerPositions, currentPlayer, previousState, ...store }) {
+      toObservable(computed(() => {
+        return {
+          players: players(),
+          board: board(),
+          playerPositions: playerPositions(),
+          currentPlayer: currentPlayer(),
+        }
+      })).pipe(
+        pairwise(),
+        map(([previousState]) => previousState),
+        tap((state) => console.log('state', state)),
+        tap((state) => patchState(store, { previousState: state })),
+        takeUntilDestroyed(),
+      ).subscribe();
+    }
+  }),
+);

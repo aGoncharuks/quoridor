@@ -12,3 +12,29 @@ body {
   color: #fff;
   overflow: hidden;
 }
+
+.centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+button {
+  background-color: #8c6653;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #b38b70;
+}
+
+button:disabled {
+  pointer-events: none;
+  cursor: default;
+  opacity: 0.5;
+}
+

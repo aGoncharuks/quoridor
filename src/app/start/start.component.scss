@@ -3,25 +3,8 @@
   height: 100vh;
 }
 
-.centered {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-}
-
-/* start.component.css - continued */
-button {
+.start-btn {
   padding: 30px 100px;
-  background-color: #8c6653; /* Darker wooden tone for the button */
-  border: none;
   border-radius: 15px;
-  color: #fff;
   font-size: 30px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-button:hover {
-  background-color: #b38b70; /* Lighter shade on hover */
 }

@@ -5,7 +5,22 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
 }
+
+.action-buttons {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .game-action-btn {
+    padding: 15px 50px;
+    border-radius: 8px;
+    font-size: 15px;
+  }
+}
+
 
 .game-board {
   display: flex;

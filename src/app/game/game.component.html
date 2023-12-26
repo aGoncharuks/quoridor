@@ -1,3 +1,9 @@
+<div class="action-buttons">
+	<button class="game-action-btn"
+	        [disabled]="!store.previousState()"
+	        (click)="store.undo()">Undo</button>
+</div>
+
 <div class="game-board">
   @for (row of store.board(); track rowIndex; let rowIndex = $index) {
     <div class="board-row">
@@ -7,12 +13,12 @@
 	        @if (rowIndex < (row.length - 1)) {
 	          <div class="gap gap-x"
 	               [class.wall]="cell.walls.x"
-	               (click)="store.placeWall(cell, 'x'); $event.stopPropagation()"></div>
+	               (click)="store.placeWall({x: cellIndex, y: rowIndex, axis: 'x'}); $event.stopPropagation()"></div>
 	        }
 		      @if (cellIndex < (store.board().length -1)) {
 			      <div class="gap gap-y"
 			           [class.wall]="cell.walls.y"
-			           (click)="store.placeWall(cell, 'y'); $event.stopPropagation();"></div>
+			           (click)="store.placeWall({x: cellIndex, y: rowIndex, axis: 'y'}); $event.stopPropagation();"></div>
 		      }
         </div>
       }
