@@ -4,11 +4,17 @@ import { patchState, signalStore, withHooks, withMethods, withState } from '@ngr
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { bufferCount, map, pairwise, pipe, tap } from 'rxjs';
 
+const WALLS_PER_PLAYER = 10;
+
 type Player = 'Player1' | 'Player2';
 
 interface BoardPosition {
   x: number;
   y: number;
+}
+
+interface PlayerState extends BoardPosition {
+  wallsRemaining: number;
 }
 
 interface BoardCell {
@@ -18,15 +24,15 @@ interface BoardCell {
   }
 }
 
-interface PlayerPositions {
-  Player1: BoardPosition;
-  Player2: BoardPosition;
+interface PlayersState {
+  Player1: PlayerState;
+  Player2: PlayerState;
 }
 
 interface GameState {
   players: Player[];
   board: BoardCell[][];
-  playerPositions: PlayerPositions;
+  playersState: PlayersState;
   currentPlayer: Player;
   previousState: Omit<GameState, 'previousState'> | null;
 }
@@ -46,33 +52,55 @@ const initStartingPlayer = (): Player => {
   return Math.random() > 0.5 ? 'Player1' : 'Player2';
 }
 
-const initStartingPlayerPositions = (): PlayerPositions => {
-  return { Player1: { x: 4, y: 0 }, Player2: { x: 4, y: 8 } };
+const initStartingPlayersState = (): PlayersState => {
+  return {
+    Player1: {
+      x: 4,
+      y: 0,
+      wallsRemaining: WALLS_PER_PLAYER
+    },
+    Player2: {
+      x: 4,
+      y: 8,
+      wallsRemaining: WALLS_PER_PLAYER
+    }
+  };
 }
 
 export const GameStore = signalStore(
   withState<GameState>({
     players: ['Player1', 'Player2'],
     board: initializeBoard(),
-    playerPositions: initStartingPlayerPositions(),
+    playersState: initStartingPlayersState(),
     currentPlayer: initStartingPlayer(),
     previousState: null,
   }),
-  withMethods(({ currentPlayer, previousState, ...store }) => ({
+  withMethods(({ currentPlayer, playersState, previousState, ...store }) => ({
     changePlayer() {
       patchState(store, { currentPlayer: currentPlayer() === 'Player1' ? 'Player2' : 'Player1' });
+    },
+    onWallUsedByPlayer(player: Player) {
+      const playerState = playersState()[player];
+      const updatedPlayerState = {
+        ...playerState,
+        wallsRemaining: playerState.wallsRemaining === 0 ? playerState.wallsRemaining : playerState.wallsRemaining - 1
+      }
+      patchState(store, { playersState: { ...playersState(), [player]: updatedPlayerState } });
     },
     undo() {
       patchState(store, { ...previousState() });
     }
   })),
-  withMethods(({ changePlayer }) => ({
+  withMethods(({ currentPlayer, onWallUsedByPlayer, changePlayer }) => ({
     trackPlacedWalls: rxMethod(pipe(
       bufferCount(2),
-      tap(() => changePlayer())
+      tap(() => {
+        onWallUsedByPlayer(currentPlayer());
+        changePlayer();
+      })
     )),
   })),
-  withMethods(({ playerPositions, board, currentPlayer, trackPlacedWalls, changePlayer, ...store }) => ({
+  withMethods(({ playersState, board, currentPlayer, trackPlacedWalls, changePlayer, ...store }) => ({
     placeWall({ x, y, axis }) {
       const cell = board()[y][x];
       const newCell = {
@@ -88,25 +116,29 @@ export const GameStore = signalStore(
       patchState(store, { board: newBoard });
       trackPlacedWalls(true);
     },
-    movePlayer(player: string, position: BoardPosition) {
+    movePlayer(player: Player, position: BoardPosition) {
+      const playerState = playersState()[player];
       const updatedPositions = {
-        ...playerPositions(),
-        [player]: position
+        ...playersState(),
+        [player]: {
+          ...playerState,
+          ...position
+        }
       };
-      patchState(store, { playerPositions: updatedPositions });
+      patchState(store, { playersState: updatedPositions });
       changePlayer();
     },
     getPlayerPosition(player: Player) {
-      return playerPositions()[player];
+      return playersState()[player];
     }
   })),
   withHooks({
-    onInit({ players, board, playerPositions, currentPlayer, previousState, ...store }) {
+    onInit({ players, board, playersState, currentPlayer, previousState, ...store }) {
       toObservable(computed(() => {
         return {
           players: players(),
           board: board(),
-          playerPositions: playerPositions(),
+          playersState: playersState(),
           currentPlayer: currentPlayer(),
         }
       })).pipe(

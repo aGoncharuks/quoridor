@@ -17,4 +17,7 @@ export class GameComponent {
   public store = inject(GameStore);
   public cellSize = 80;
 
+  public wallsArray(wallsCount: number): Array<boolean> {
+    return Array(wallsCount).fill(true);
+  }
 }

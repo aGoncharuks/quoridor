@@ -1,6 +1,8 @@
 :host {
   --cell-size: 80px;
   --gap-size: 10px;
+  --player-1-color: #b5651d;
+  --player-2-color: #5b3926;
   height: 100vh;
   display: flex;
   justify-content: center;
@@ -8,16 +10,34 @@
   flex-direction: column;
 }
 
-.action-buttons {
-  padding: 20px;
+.control-panel {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  width: calc((var(--cell-size) + var(--gap-size)) * 9);
+  margin-bottom: 20px;
 
   .game-action-btn {
     padding: 15px 50px;
     border-radius: 8px;
     font-size: 15px;
+  }
+
+  .remaining-walls {
+    display: flex;
+    gap: 8px;
+  }
+
+  .remaining-wall {
+    height: 40px;
+    width: 8px;
+
+    &.Player1 {
+      background-color: var(--player-1-color)
+    }
+    &.Player2 {
+      background-color: var(--player-2-color);
+    }
   }
 }
 
@@ -97,10 +117,10 @@
     }
 
     &.Player1 {
-      background-color: #b5651d;
+      background-color: var(--player-1-color)
     }
     &.Player2 {
-      background-color: #5b3926;
+      background-color: var(--player-2-color);
     }
   }
 }

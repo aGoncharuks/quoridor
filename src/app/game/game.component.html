@@ -1,7 +1,17 @@
-<div class="action-buttons">
+<div class="control-panel">
+	<div class="remaining-walls">
+		@for (wall of wallsArray(store.playersState()['Player1'].wallsRemaining); track $index) {
+			<div class="remaining-wall Player1"></div>
+		}
+	</div>
 	<button class="game-action-btn"
 	        [disabled]="!store.previousState()"
 	        (click)="store.undo()">Undo</button>
+	<div class="remaining-walls">
+		@for (wall of wallsArray(store.playersState()['Player2'].wallsRemaining); track $index) {
+			<div class="remaining-wall Player2"></div>
+		}
+	</div>
 </div>
 
 <div class="game-board">
