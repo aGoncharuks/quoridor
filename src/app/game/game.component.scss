@@ -73,22 +73,17 @@
       width: 10px;
       right: -10px;
       height: var(--cell-size);
-
-      &:hover {
-        cursor: col-resize;
-      }
     }
 
     &.gap-x {
       height: 10px;
       bottom: -10px;
       width: var(--cell-size);
-
-      &:hover {
-        cursor: row-resize;
-      }
     }
 
+    &:hover {
+      background-color: #d6c9c1;
+    }
 
     &.wall {
       background-color: #5C2B29;
