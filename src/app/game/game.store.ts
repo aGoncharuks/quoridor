@@ -34,7 +34,7 @@ export const GameStore = signalStore(
     )),
   })),
   withMethods(({ playersState, board, currentPlayer, trackPlacedWalls, changePlayer, ...store }) => ({
-    placeWall({ x, y, axis }) {
+    placeWall({ x, y, axis }: {x: number, y: number, axis: 'x' | 'y' }) {
       const cell = board()[y][x];
       const newCell = {
         ...cell,
