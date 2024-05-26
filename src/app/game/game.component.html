@@ -1,6 +1,6 @@
 <div class="control-panel">
 	<div class="remaining-walls">
-		@for (wall of wallsArray(store.playersState()['Player1'].wallsRemaining); track $index) {
+		@for (wall of wallsArray(store.state.playersState()['Player1'].wallsRemaining); track $index) {
 			<div class="remaining-wall Player1"></div>
 		}
 	</div>
@@ -8,24 +8,24 @@
 	        [disabled]="!previousState()"
 	        (click)="undo()">Undo</button>
 	<div class="remaining-walls">
-		@for (wall of wallsArray(store.playersState()['Player2'].wallsRemaining); track $index) {
+		@for (wall of wallsArray(store.state.playersState()['Player2'].wallsRemaining); track $index) {
 			<div class="remaining-wall Player2"></div>
 		}
 	</div>
 </div>
 
 <div class="game-board">
-  @for (row of store.board(); track rowIndex; let rowIndex = $index) {
+  @for (row of store.state.board(); track rowIndex; let rowIndex = $index) {
     <div class="board-row">
       @for (cell of row; track cellIndex; let cellIndex = $index) {
         <div class="board-cell"
-             (click)="store.movePlayer(store.currentPlayer(), {x: cellIndex, y: rowIndex})">
+             (click)="store.movePlayer(store.state.currentPlayer(), {x: cellIndex, y: rowIndex})">
 	        @if (rowIndex < (row.length - 1)) {
 	          <div class="gap gap-x"
 	               [class.wall]="cell.walls.x"
 	               (click)="store.placeWall({x: cellIndex, y: rowIndex, axis: 'x'}); $event.stopPropagation()"></div>
 	        }
-		      @if (cellIndex < (store.board().length -1)) {
+		      @if (cellIndex < (store.state.board().length -1)) {
 			      <div class="gap gap-y"
 			           [class.wall]="cell.walls.y"
 			           (click)="store.placeWall({x: cellIndex, y: rowIndex, axis: 'y'}); $event.stopPropagation();"></div>
@@ -35,10 +35,10 @@
     </div>
   }
 
-  @for (player of store.players(); track $index) {
+  @for (player of store.state.players(); track $index) {
     <div class="player"
          [class]="player"
-         [class.active]="store.currentPlayer() === player"
+         [class.active]="store.state.currentPlayer() === player"
          [style.top]="store.getPlayerPosition(player).y * (cellSize + 10) + 5 + 'px'"
          [style.left]="store.getPlayerPosition(player).x * (cellSize + 10) + 5 + 'px'">
     </div>
