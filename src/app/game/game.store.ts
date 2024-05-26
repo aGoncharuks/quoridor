@@ -1,8 +1,6 @@
-import { computed } from '@angular/core';
-import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
-import { patchState, signalStore, withHooks, withMethods, withState } from '@ngrx/signals';
+import { patchState, signalStore, withMethods, withState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { bufferCount, map, pairwise, pipe, tap } from 'rxjs';
+import { bufferCount, pipe, tap } from 'rxjs';
 import { initializeBoard, initStartingPlayer, initStartingPlayersState } from './game.fn';
 import { BoardPosition, GameState, Player } from './game.types';
 
@@ -12,9 +10,8 @@ export const GameStore = signalStore(
     board: initializeBoard(),
     playersState: initStartingPlayersState(),
     currentPlayer: initStartingPlayer(),
-    previousState: null,
   }),
-  withMethods(({ currentPlayer, playersState, previousState, ...store }) => ({
+  withMethods(({ currentPlayer, playersState, ...store }) => ({
     changePlayer() {
       patchState(store, { currentPlayer: currentPlayer() === 'Player1' ? 'Player2' : 'Player1' });
     },
@@ -26,9 +23,6 @@ export const GameStore = signalStore(
       }
       patchState(store, { playersState: { ...playersState(), [player]: updatedPlayerState } });
     },
-    undo() {
-      patchState(store, { ...previousState() });
-    }
   })),
   withMethods(({ currentPlayer, onWallUsedByPlayer, changePlayer }) => ({
     trackPlacedWalls: rxMethod(pipe(
@@ -70,22 +64,5 @@ export const GameStore = signalStore(
     getPlayerPosition(player: Player) {
       return playersState()[player];
     }
-  })),
-  withHooks({
-    onInit({ players, board, playersState, currentPlayer, previousState, ...store }) {
-      toObservable(computed(() => {
-        return {
-          players: players(),
-          board: board(),
-          playersState: playersState(),
-          currentPlayer: currentPlayer(),
-        }
-      })).pipe(
-        pairwise(),
-        map(([previousState]) => previousState),
-        tap((state) => patchState(store, { previousState: state })),
-        takeUntilDestroyed(),
-      ).subscribe();
-    }
-  }),
+  }))
 );

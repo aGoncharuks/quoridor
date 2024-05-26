@@ -5,8 +5,8 @@
 		}
 	</div>
 	<button class="game-action-btn"
-	        [disabled]="!store.previousState()"
-	        (click)="store.undo()">Undo</button>
+	        [disabled]="!previousState()"
+	        (click)="undo()">Undo</button>
 	<div class="remaining-walls">
 		@for (wall of wallsArray(store.playersState()['Player2'].wallsRemaining); track $index) {
 			<div class="remaining-wall Player2"></div>

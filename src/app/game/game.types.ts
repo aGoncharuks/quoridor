@@ -17,7 +17,6 @@ export interface GameState {
   board: BoardCell[][];
   playersState: PlayersState;
   currentPlayer: Player;
-  previousState: Omit<GameState, 'previousState'> | null;
 }
 
 export interface PlayersState {
